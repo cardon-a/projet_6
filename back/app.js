@@ -1,6 +1,9 @@
 const express = require('express');
 const mongoose = require('mongoose');
 
+const sauceRoutes = require('./routes/sauce');
+const userRoutes = require('./routes/user');
+
 mongoose.connect('mongodb+srv://piiquante:piiquante@piiquante.lk2emay.mongodb.net/?retryWrites=true&w=majority',
   { useNewUrlParser: true,
     useUnifiedTopology: true })
@@ -8,10 +11,9 @@ mongoose.connect('mongodb+srv://piiquante:piiquante@piiquante.lk2emay.mongodb.ne
   .catch(() => console.log('Connexion à MongoDB échouée !'))
 ;
 
-const Sauce = require('./models/sauce');
-const User = require('./models/users');
-
 const app = express();
+
+app.use(express.json());
 
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -25,22 +27,8 @@ app.use((req, res, next) => {
   next();
 });
 
-app.post('/api/auth/signup', (req, res) => {
-    const user = new User({
-        ...req.body
-    });
-    user.save()
-        .then(() => res.status(201).json({ message: 'Utilisateur enregistré !'}))
-        .catch(error = res.status(400).json({ error }));
-});
+app.use('/api/sauces', sauceRoutes);
+app.use('/api/auth', userRoutes);
 
-app.post('/api/sauces', (req, res) => {
-    const sauce = new Sauce({
-        ...req.body
-    });
-    sauce.save()
-        .then(() => res.status(201).json({ message: 'Objet enregistré !'}))
-        .catch(error = res.status(400).json({ error }));
-});
 
 module.exports = app;
