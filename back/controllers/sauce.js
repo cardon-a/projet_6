@@ -14,9 +14,14 @@ exports.sauceId = (req, res, next) => {
 };
 
 exports.sauceAdd = (req, res, next) => {
-    console.log(req.body);
+    delete req.body._id;
+    console.log(req.body.name);
     const sauce = new Sauce({
-        ...req.body
+        ...req.body,
+        likes: 0,
+        dislikes: 0,
+        usersLiked: [],
+        usersDisliked: []
     });
     sauce.save()
         .then(() => res.status(201).json({ message: 'Objet enregistré !'}))
