@@ -1,10 +1,13 @@
 const express = require('express');
 const mongoose = require('mongoose');
-
+const dotenv = require('dotenv');
 const sauceRoutes = require('./routes/sauce');
 const userRoutes = require('./routes/user');
+const path = require('path');
 
-mongoose.connect('mongodb+srv://piiquante:piiquante@piiquante.lk2emay.mongodb.net/?retryWrites=true&w=majority',
+dotenv.config();
+
+mongoose.connect('mongodb+srv://' + process.env.DB_USER + ':' + process.env.DB_PASSWORD + '@piiquante.lk2emay.mongodb.net/?retryWrites=true&w=majority',
   { useNewUrlParser: true,
     useUnifiedTopology: true })
   .then(() => console.log('Connexion à MongoDB réussie !'))
@@ -13,8 +16,6 @@ mongoose.connect('mongodb+srv://piiquante:piiquante@piiquante.lk2emay.mongodb.ne
 
 const app = express();
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -23,13 +24,13 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use((req, res, next) => {
-  console.log('Requête reçue !');
-  next();
-});
+app.use(express.json());
+
+app.use('/images', express.static(path.join(__dirname, 'images')));
 
 app.use('/api/sauces', sauceRoutes);
 app.use('/api/auth', userRoutes);
+
 
 
 module.exports = app;
